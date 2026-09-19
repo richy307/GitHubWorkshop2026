@@ -246,12 +246,33 @@ h1 {
 }
 
 .app-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: 20px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
-  text-align: center;
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+
+.clear-completed {
+  padding: 6px 10px;
+  color: var(--danger);
+  background: transparent;
+  border: 1px solid var(--danger);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.clear-completed:hover:not(:disabled) {
+  background: var(--danger-soft);
+}
+
+.clear-completed:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 /* ---------- 無障礙與手機版 ---------- */

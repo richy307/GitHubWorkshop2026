@@ -9,9 +9,21 @@ const input = document.getElementById('todo-input');
 const list = document.getElementById('todo-list');
 const emptyState = document.getElementById('empty-state');
 const remainingCount = document.getElementById('remaining-count');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = themeToggle.querySelector('.theme-icon');
+const themeLabel = themeToggle.querySelector('.theme-label');
+const filterButtons = document.querySelectorAll('.filter-button');
 
 // 所有待辦事項都放在這個陣列裡
 let todos = loadTodos();
+let currentFilter = 'all';
+
+const THEME_STORAGE_KEY = 'github-workshop-theme';
+const emptyMessages = {
+  all: '還沒有任何待辦事項,新增一個吧!',
+  active: '沒有未完成的待辦事項',
+  completed: '沒有已完成的待辦事項',
+};
 
 // ---------- 資料存取 ----------
 
@@ -32,13 +44,43 @@ function saveTodos() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
 }
 
+// ---------- 色彩主題 ----------
+
+/** 取得目前應使用的主題,沒有手動設定時交給作業系統決定 */
+function getCurrentTheme() {
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+/** 更新主題按鈕文字與圖示 */
+function updateThemeButton(theme) {
+  const isDark = theme === 'dark';
+  themeIcon.textContent = isDark ? '☀️' : '🌙';
+  themeLabel.textContent = isDark ? '淺色模式' : '深色模式';
+  themeToggle.setAttribute('aria-pressed', String(isDark));
+}
+
+/** 套用主題,手動選擇會覆寫作業系統設定 */
+function applyTheme(theme, savePreference = false) {
+  document.documentElement.dataset.theme = theme;
+  updateThemeButton(theme);
+  if (savePreference) localStorage.setItem(THEME_STORAGE_KEY, theme);
+}
+
 // ---------- 畫面繪製 ----------
 
 /** 依照目前的待辦清單重新繪製畫面 */
 function render() {
   list.replaceChildren();
 
-  todos.forEach((todo) => {
+  const visibleTodos = todos.filter((todo) => {
+    if (currentFilter === 'active') return !todo.completed;
+    if (currentFilter === 'completed') return todo.completed;
+    return true;
+  });
+
+  visibleTodos.forEach((todo) => {
     const item = document.createElement('li');
     item.className = todo.completed ? 'todo-item completed' : 'todo-item';
     item.dataset.id = todo.id;
@@ -66,7 +108,8 @@ function render() {
   });
 
   // 清單為空時顯示提示文字
-  emptyState.hidden = todos.length > 0;
+  emptyState.textContent = emptyMessages[currentFilter];
+  emptyState.hidden = visibleTodos.length > 0;
 
   // 更新未完成數量
   const remaining = todos.filter((todo) => !todo.completed).length;
@@ -107,6 +150,17 @@ function deleteTodo(id) {
   render();
 }
 
+/** 切換目前的清單篩選條件 */
+function setFilter(filter) {
+  currentFilter = filter;
+  filterButtons.forEach((button) => {
+    const isActive = button.dataset.filter === filter;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-pressed', String(isActive));
+  });
+  render();
+}
+
 // ---------- 事件綁定 ----------
 
 // 送出表單時新增待辦
@@ -135,5 +189,22 @@ list.addEventListener('click', (event) => {
   }
 });
 
+// 切換淺色與深色模式,並保存使用者的手動選擇
+themeToggle.addEventListener('click', () => {
+  const nextTheme = getCurrentTheme() === 'dark' ? 'light' : 'dark';
+  applyTheme(nextTheme, true);
+});
+
+// 變更篩選條件
+filterButtons.forEach((button) => {
+  button.addEventListener('click', () => setFilter(button.dataset.filter));
+});
+
+// 沒有手動偏好時,作業系統主題變更也會同步更新畫面
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (!localStorage.getItem(THEME_STORAGE_KEY)) applyTheme(getCurrentTheme());
+});
+
 // 頁面載入時先繪製一次
+applyTheme(getCurrentTheme());
 render();

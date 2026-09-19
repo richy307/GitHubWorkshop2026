@@ -6,12 +6,63 @@
 :root {
   --bg: #f4f5f7;
   --surface: #ffffff;
+  --surface-muted: #eef1f4;
   --text: #1f2328;
   --text-muted: #656d76;
   --border: #d0d7de;
   --accent: #1f883d;
   --accent-hover: #1a7f37;
+  --accent-contrast: #ffffff;
   --danger: #cf222e;
+  --danger-soft: rgba(207, 34, 46, 0.1);
+  --shadow: rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161b22;
+    --surface: #21262d;
+    --surface-muted: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --border: #444c56;
+    --accent: #3fb950;
+    --accent-hover: #56d364;
+    --accent-contrast: #0d1117;
+    --danger: #ff7b72;
+    --danger-soft: rgba(255, 123, 114, 0.16);
+    --shadow: rgba(0, 0, 0, 0.3);
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --surface-muted: #eef1f4;
+  --text: #1f2328;
+  --text-muted: #656d76;
+  --border: #d0d7de;
+  --accent: #1f883d;
+  --accent-hover: #1a7f37;
+  --accent-contrast: #ffffff;
+  --danger: #cf222e;
+  --danger-soft: rgba(207, 34, 46, 0.1);
+  --shadow: rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="dark"] {
+  --bg: #161b22;
+  --surface: #21262d;
+  --surface-muted: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --border: #444c56;
+  --accent: #3fb950;
+  --accent-hover: #56d364;
+  --accent-contrast: #0d1117;
+  --danger: #ff7b72;
+  --danger-soft: rgba(255, 123, 114, 0.16);
+  --shadow: rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -34,13 +85,42 @@ body {
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 h1 {
-  margin: 0 0 20px;
+  margin: 0;
   font-size: 1.5rem;
-  text-align: center;
+}
+
+.theme-toggle,
+.filter-button {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+.theme-toggle:hover,
+.filter-button:hover {
+  background: var(--surface-muted);
 }
 
 /* ---------- 新增表單 ---------- */
@@ -70,7 +150,7 @@ h1 {
   padding: 10px 18px;
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--accent-contrast);
   background: var(--accent);
   border: none;
   border-radius: 8px;
@@ -79,6 +159,26 @@ h1 {
 
 .btn-add:hover {
   background: var(--accent-hover);
+}
+
+/* ---------- 篩選按鈕 ---------- */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.filter-button {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.filter-button.active {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
 }
 
 /* ---------- 清單 ---------- */
@@ -96,7 +196,7 @@ h1 {
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: var(--bg);
+  background: var(--surface-muted);
   border: 1px solid var(--border);
   border-radius: 8px;
 }
@@ -135,7 +235,7 @@ h1 {
 }
 
 .btn-delete:hover {
-  background: rgba(207, 34, 46, 0.1);
+  background: var(--danger-soft);
 }
 
 /* ---------- 空狀態與頁尾 ---------- */
@@ -174,5 +274,14 @@ h1 {
 
   .todo-form {
     flex-direction: column;
+  }
+
+  .app-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .theme-toggle {
+    align-self: flex-end;
   }
 }

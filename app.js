@@ -9,6 +9,7 @@ const input = document.getElementById('todo-input');
 const list = document.getElementById('todo-list');
 const emptyState = document.getElementById('empty-state');
 const remainingCount = document.getElementById('remaining-count');
+const clearCompletedButton = document.getElementById('clear-completed');
 const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = themeToggle.querySelector('.theme-icon');
 const themeLabel = themeToggle.querySelector('.theme-label');
@@ -114,6 +115,7 @@ function render() {
   // 更新未完成數量
   const remaining = todos.filter((todo) => !todo.completed).length;
   remainingCount.textContent = `未完成:${remaining} 項`;
+  clearCompletedButton.disabled = !todos.some((todo) => todo.completed);
 }
 
 // ---------- 操作行為 ----------
@@ -146,6 +148,16 @@ function toggleTodo(id) {
 /** 刪除某一筆待辦 */
 function deleteTodo(id) {
   todos = todos.filter((todo) => todo.id !== id);
+  saveTodos();
+  render();
+}
+
+/** 清除所有已完成的待辦事項 */
+function clearCompletedTodos() {
+  if (!todos.some((todo) => todo.completed)) return;
+  if (!window.confirm('確定要清除所有已完成的事項嗎?')) return;
+
+  todos = todos.filter((todo) => !todo.completed);
   saveTodos();
   render();
 }
@@ -199,6 +211,9 @@ themeToggle.addEventListener('click', () => {
 filterButtons.forEach((button) => {
   button.addEventListener('click', () => setFilter(button.dataset.filter));
 });
+
+// 清除所有已完成的待辦事項
+clearCompletedButton.addEventListener('click', clearCompletedTodos);
 
 // 沒有手動偏好時,作業系統主題變更也會同步更新畫面
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {

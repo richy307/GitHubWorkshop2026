@@ -22,7 +22,7 @@ const THEME_STORAGE_KEY = 'github-workshop-theme';
 const emptyMessages = {
   all: '還沒有任何待辦事項,新增一個吧!',
   active: '沒有未完成的待辦事項',
-  completed: '沒有已完成的待辦事項',
+  completed: '目前沒有已完成的事項,其他事項仍保留在清單中',
 };
 
 // ---------- 資料存取 ----------
